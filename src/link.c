@@ -26,10 +26,10 @@
 #include <limits.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #ifndef __MINGW32__
 #include <sys/wait.h>
-#include <sys/stat.h>
 #endif
 
 #ifdef __CYGWIN__

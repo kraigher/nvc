@@ -289,12 +289,10 @@ static void link_exec(void)
          printf("%s%c", args[i], (i + 1 == n_args ? '\n' : ' '));
    }
 
-#if defined __CYGWIN__
+#if defined __CYGWIN__ || defined __MINGW32__
    int status = spawnv(_P_WAIT, args[0], (const char * const *)args);
    if (status != 0)
       fatal("%s failed with status %d", args[0], status);
-#elif defined __MINGW32__
-   fatal("TODO link_exec on MSYS");
 #else  // __CYGWIN__
    pid_t pid = fork();
    if (pid == 0) {

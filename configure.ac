@@ -97,7 +97,7 @@ case $host_os in
     AC_MSG_NOTICE([checking for the Windows network libraries...])
     LIBS="$LIBS -lwsock32 -lws2_32 -lnetapi32"
     AC_LINK_IFELSE(
-      [AC_LANG_PROGRAM([#include <winsock.h>], [WSAGetLastError()])],
+      [AC_LANG_PROGRAM([[@%:@include <winsock.h>]], [[WSAGetLastError()]])],
       [AC_MSG_NOTICE([yes])],
       [AC_MSG_ERROR([unable to find the WinSock library])
     ])

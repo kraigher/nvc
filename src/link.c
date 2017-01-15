@@ -401,7 +401,7 @@ static void link_write_module(tree_t top)
 
    char *fname LOCAL = xasprintf("%s/_%s.bc", lib_path, istr(product));
 
-   FILE *f = fopen(fname, "w");
+   FILE *f = fopen(fname, "wb");
    if (f == NULL)
       fatal_errno("%s", fname);
    else if (LLVMWriteBitcodeToFD(module, fileno(f), 0, 0) != 0)

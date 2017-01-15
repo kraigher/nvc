@@ -58,12 +58,6 @@ AX_PROG_FLEX([], [AC_MSG_ERROR(GNU Flex not found)])
 
 case $host_os in
   openbsd*)
-    # Need -pthread for TCL on OpenBSD
-    AX_PTHREAD
-    LIBS="$PTHREAD_LIBS $LIBS"
-    CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-    LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
-
     # Need to link libexecinfo explicitly
     AC_SEARCH_LIBS([backtrace_symbols], [execinfo], [],
       [AC_MSG_ERROR(libexecinfo not found)], [])
@@ -96,6 +90,27 @@ esac
 AC_SEARCH_LIBS([pow], [m], [], [
   AC_MSG_ERROR([unable to find the pow() function])
 ])
+
+case $host_os in
+  mingw32.static)
+    # On Mingw32 static builds need WinSock libraray for TCL
+    AC_MSG_NOTICE([checking for the Windows network libraries...])
+    LIBS="$LIBS -lwsock32 -lws2_32 -lnetapi32"
+    AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM([#include <winsock.h>], [WSAGetLastError()])],
+      [AC_MSG_NOTICE([yes])],
+      [AC_MSG_ERROR([unable to find the WinSock library])
+    ])
+    ;;
+
+  openbsd*)
+    # Need -pthread for TCL on OpenBSD
+    AX_PTHREAD
+    LIBS="$PTHREAD_LIBS $LIBS"
+    CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+    LDFLAGS="$LDFLAGS $PTHREAD_LDFLAGS"
+    ;;
+esac
 
 AC_CHECK_HEADERS([tcl.h tcl/tcl.h], [have_tcl=yes; break], [])
 AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl tcl86], [],

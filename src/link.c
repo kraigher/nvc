@@ -290,7 +290,7 @@ static void link_exec(void)
    }
 
 #if defined __CYGWIN__ || defined __MINGW32__
-   int status = spawnv(_P_WAIT, args[0], (const char * const *)args);
+   int status = spawnv(_P_WAIT, args[0], (char * const *)args);
    if (status != 0)
       fatal("%s failed with status %d", args[0], status);
 #else  // __CYGWIN__

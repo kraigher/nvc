@@ -32,7 +32,7 @@
 #include <sys/wait.h>
 #endif
 
-#ifdef __CYGWIN__
+#if defined __CYGWIN__ || defined __MINGW32__
 #include <process.h>
 #endif
 
@@ -172,7 +172,7 @@ static void link_context_bc_fn(lib_t lib, tree_t unit, FILE *deps)
 }
 
 #ifdef IMPLIB_REQUIRED
-static void link_context_cyg_fn(lib_t lib, tree_t unit, FILE *deps)
+static void link_context_implib_fn(lib_t lib, tree_t unit, FILE *deps)
 {
    if (link_find_native_library(lib, unit, deps))
       link_product(lib, tree_ident(unit), "", "a");
@@ -293,7 +293,7 @@ static void link_exec(void)
    int status = spawnv(_P_WAIT, args[0], (char * const *)args);
    if (status != 0)
       fatal("%s failed with status %d", args[0], status);
-#else  // __CYGWIN__
+#else  // __CYGWIN__ || __MINGW32__
    pid_t pid = fork();
    if (pid == 0) {
       execv(args[0], args);
@@ -309,7 +309,7 @@ static void link_exec(void)
    }
    else
       fatal_errno("fork");
-#endif  // __CYGWIN__
+#endif  // __CYGWIN__ || __MINGW32__
 
    n_linked = 0;
 }
@@ -349,7 +349,7 @@ static void link_shared(tree_t top)
    link_arg_f("-shared");
 #endif
 
-#if defined __CYGWIN__
+#if defined IMPLIB_REQUIRED
    link_arg_f("-Wl,--export-all-symbols");
    link_product(lib_work(), tree_ident(top), "-Wl,--out-implib=", "a");
 #endif
@@ -363,11 +363,11 @@ static void link_shared(tree_t top)
       link_arg_f("%s", obj);
 
 #ifdef IMPLIB_REQUIRED
-   const char *cyglib = getenv("NVC_CYG_LIB");
-   link_arg_f("-L%s", (cyglib != NULL) ? cyglib : DATADIR);
+   const char *implib = getenv("NVC_IMP_LIB");
+   link_arg_f("-L%s", (implib != NULL) ? implib : DATADIR);
    link_arg_f("-lnvcimp");
 
-   link_all_context(top, NULL, link_context_cyg_fn);
+   link_all_context(top, NULL, link_context_implib_fn);
 #endif
 
    link_exec();

@@ -72,7 +72,12 @@ AC_DEFUN([AX_LLVM_C], [
               LLVM_SYSLIBS="$($ac_llvm_config_path --ldflags)"
           fi
 
-          LLVM_LIBS="$($ac_llvm_config_path --libs $1) $LLVM_SYSLIBS"
+          LLVM_COMPS="$1"
+          if test "$llvm_ver_num" -lt "38"; then
+              LLVM_COMPS="$(echo $LLVM_COMPS | sed 's|orcjit||g')"
+          fi
+
+          LLVM_LIBS="$($ac_llvm_config_path --libs $LLVM_COMPS) $LLVM_SYSLIBS"
           LLVM_CONFIG_BINDIR="$($ac_llvm_config_path --bindir | sed  's|\\|\\\\|g')"
           LLVM_LIBDIR="$($ac_llvm_config_path --libdir)"
 
